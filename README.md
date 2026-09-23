@@ -41,6 +41,7 @@ La reactividad no se queda en los controllers: toda la cadena, `HTTP → WebFlux
 - [OpenAPI](#openapi)
 - [Decisiones técnicas](#decisiones-técnicas)
 - [Posibles mejoras](#posibles-mejoras)
+- [Autor](#autor)
 - [Licencia](#licencia)
 
 ---
@@ -679,6 +680,11 @@ WARN [cid:abc-123] ... NotificationClient : Retrying notification orderId=3 atte
 - **BlockHound** en los tests para detectar automáticamente llamadas bloqueantes en hilos del event loop.
 - **Trazas distribuidas** (Micrometer Tracing + OpenTelemetry) y métricas de negocio (pedidos por estado, fallos de stock).
 - **Pipeline de CI** (GitHub Actions) con tests, análisis estático y escaneo de dependencias.
+
+## Autor
+
+- **LinkedIn:** [samuel-martinez-beleno](https://www.linkedin.com/in/samuel-martinez-beleno/)
+- **GitHub:** [samsenpro](https://github.com/samsenpro)
 
 ## Licencia
 
