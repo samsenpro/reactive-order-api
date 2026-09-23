@@ -1,0 +1,91 @@
+spring:
+  application:
+    name: reactive-order-api
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:reactive_orders}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+      validation-query: SELECT 1
+  # Flyway usa JDBC solo para migrar el esquema al arrancar. La aplicación accede a los datos por R2DBC.
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:reactive_orders}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  # Propaga el contexto de Reactor (correlation ID) a ThreadLocal/MDC para los logs
+  reactor:
+    context-propagation: auto
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    # Segundos de validez del access token
+    expiration: ${JWT_EXPIRATION:3600}
+    issuer: reactive-order-api
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+    name: ${ADMIN_NAME:Administrator}
+  notification:
+    base-url: ${NOTIFICATION_SERVICE_URL:http://localhost:8081}
+    timeout: ${NOTIFICATION_TIMEOUT:2s}
+    max-retries: ${NOTIFICATION_MAX_RETRIES:2}
+    retry-backoff: ${NOTIFICATION_RETRY_BACKOFF:200ms}
+  rate-limit:
+    # Límite de peticiones por IP a /api/v1/auth/** (protección básica contra fuerza bruta)
+    auth-max-requests: ${AUTH_RATE_LIMIT:10}
+    auth-window: ${AUTH_RATE_LIMIT_WINDOW:1m}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+      roles: ADMIN
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+info:
+  app:
+    name: Reactive Order API
+    description: API reactiva de pedidos con Spring WebFlux, R2DBC y PostgreSQL
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  pattern:
+    level: "%5p [cid:%X{correlationId:-}]"
+  level:
+    root: INFO
+    com.example.reactiveorderapi: INFO
